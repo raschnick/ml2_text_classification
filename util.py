@@ -1,4 +1,5 @@
 import gensim
+import re
 import numpy as np
 from sklearn.metrics import accuracy_score
 from sklearn.naive_bayes import BernoulliNB
@@ -26,3 +27,22 @@ def train_bernoulli(word_embedding_path, X_train, X_test, y_train, y_test):
     accuracy = accuracy_score(y_test, y_pred)
     print(f'Accuracy: {accuracy}')
     return nb_model
+
+
+def cleanse_data(df):
+    clean_txt = []
+    for w in range(len(df.description)):
+        # make text lower case
+        desc = df['description'][w].lower()
+
+        # remove punctuation
+        desc = re.sub('[^a-zA-Z]', ' ', desc)
+
+        # remove tags
+        desc = re.sub('&lt;/?.*?&gt;', ' &lt;&gt; ', desc)
+
+        # remove digits and special chars
+        desc = re.sub('(\\d|\\W)+', ' ', desc)
+        clean_txt.append(desc)
+
+    return clean_txt
